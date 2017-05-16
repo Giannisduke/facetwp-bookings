@@ -43,13 +43,14 @@ class FacetWP_Facet_Availability
         $value = $params['selected_values'];
         $value = empty( $value ) ? array( '', '', 1 ) : $value;
         $time  = 'yes' === $params['facet']['time'] ? 'true' : 'false';
+        $time_format = empty( $params['facet']['time_format'] ) ? '24hr' : $params['facet']['time_format'];
         $minute_increment = empty( $params['facet']['minute_increment'] ) ? 1 : $params['facet']['minute_increment'];
         $hour_increment = empty( $params['facet']['hour_increment'] ) ? 1 : $params['facet']['hour_increment'];
 
         $output = '';
-        $output .= '<input type="text" class="facetwp-date facetwp-date-min" data-minute-increment="' . $minute_increment . '" data-hour-increment="' . $hour_increment . '" data-enable-time="' . $time . '" value="' . $value[0] . '" placeholder="' . __( 'Start Date', 'fwp' ) . '" />';
-        $output .= '<input type="text" class="facetwp-date facetwp-date-max" data-minute-increment="' . $minute_increment . '" data-hour-increment="' . $hour_increment . '" data-enable-time="' . $time . '" value="' . $value[1] . '" placeholder="' . __( 'End Date', 'fwp' ) . '" />';
-        $output .= '<input type="number" class="facetwp-quantity" value="1" min="' . $value[2] . '" max="20" placeholder="' . __( 'Quantity', 'fwp' ) . '" />';
+        $output .= '<input type="text" class="facetwp-date facetwp-date-min" data-time-format="'. $time_format .'" data-minute-increment="' . $minute_increment . '" data-hour-increment="' . $hour_increment . '" data-enable-time="' . $time . '" value="' . $value[0] . '" placeholder="' . __( 'Start Date', 'fwp' ) . '" />';
+        $output .= '<input type="text" class="facetwp-date facetwp-date-max" data-time-format="'. $time_format .'" data-minute-increment="' . $minute_increment . '" data-hour-increment="' . $hour_increment . '" data-enable-time="' . $time . '" value="' . $value[1] . '" placeholder="' . __( 'End Date', 'fwp' ) . '" />';
+        $output .= '<input type="number" class="facetwp-quantity" value="'. esc_attr( $value[2] ) .'" min="0" placeholder="' . __( 'Quantity', 'fwp' ) . '" />';
         $output .= '<input type="submit" class="facetwp-availability-update" value="' . __( 'Update', 'fwp' ) . '" />';
         return $output;
     }
@@ -272,7 +273,8 @@ class FacetWP_Facet_Availability
         $this.find('.facet-time').val(obj.time);
         $this.find('.facet-minute-increment').val(obj.minute_increment);        
         $this.find('.facet-hour-increment').val(obj.hour_increment);
-        $this.find('.facet-behavior').val(obj.behavior);        
+        $this.find('.facet-behavior').val(obj.behavior);
+        $this.find('.facet-time-format').val(obj.time_format);
     });
 
     wp.hooks.addFilter('facetwp/save/availability', function($this, obj) {
@@ -280,6 +282,7 @@ class FacetWP_Facet_Availability
         obj['minute_increment'] = $this.find('.facet-minute-increment').val();        
         obj['hour_increment'] = $this.find('.facet-hour-increment').val();        
         obj['behavior'] = $this.find('.facet-behavior').val();
+        obj['time_format'] = $this.find('.facet-time-format').val();
         return obj;
     });
 
@@ -288,6 +291,7 @@ class FacetWP_Facet_Availability
         var display = ('yes' == $(this).val()) ? 'table-row' : 'none';
         $facet.find('.facet-minute-increment').closest('tr').css({ 'display' : display });
         $facet.find('.facet-hour-increment').closest('tr').css({ 'display' : display });
+        $facet.find('.facet-time-format').closest('tr').css({ 'display' : display });
     });
 })(jQuery);
 </script>
@@ -348,11 +352,13 @@ class FacetWP_Facet_Availability
         };
 
         $dates.each(function() {
-            var facetwp_facet = $(this).closest('.facetwp-facet');
-            var facet_name    = facetwp_facet.attr('data-name');
-            var date_format   = facetwp_facet.find('.facetwp-date').attr('data-enable-time') == 'true' ? 'Y-m-d H:i' : 'Y-m-d';
+            var facetwp_facet      = $(this).closest('.facetwp-facet');
+            var facet_name         = facetwp_facet.attr('data-name');
+            var date_format        = facetwp_facet.find('.facetwp-date').attr('data-enable-time') == 'true' ? 'Y-m-d H:i' : 'Y-m-d';
+            var time_format        = facetwp_facet.find('.facetwp-date').attr('data-time-format');
 
             flatpickr_opts.dateFormat = date_format;
+            flatpickr_opts.time_24hr = ('24hr' === time_format);
 
             var opts = wp.hooks.applyFilters('facetwp/set_options/availability', flatpickr_opts, {
                 'facet_name': facet_name
@@ -428,6 +434,17 @@ class FacetWP_Facet_Availability
             </td>
             <td>
                 <input type="number" class="facet-hour-increment" value="1" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <?php _e('Time Format', 'fwp'); ?>:
+            </td>
+            <td>
+                <select class="facet-time-format">
+                    <option value="12hr"><?php _e( 'AM / PM', 'fwp' ); ?></option>
+                    <option value="24hr"><?php _e( '24 Hour', 'fwp' ); ?></option>
+                </select>
             </td>
         </tr>
 <?php
