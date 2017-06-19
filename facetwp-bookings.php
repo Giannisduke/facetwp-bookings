@@ -363,7 +363,7 @@ class FacetWP_Facet_Availability
             var opts = wp.hooks.applyFilters('facetwp/set_options/availability', flatpickr_opts, {
                 'facet_name': facet_name
             });
-            new Flatpickr(this, opts);
+            new flatpickr(this, opts);
             $(this).addClass('ready');
         });
     });
