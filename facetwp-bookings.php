@@ -2,7 +2,7 @@
 /*
 Plugin Name: FacetWP - Bookings Integration
 Description: WooCommerce Bookings support
-Version: 0.5
+Version: 0.5.1
 Author: FacetWP, LLC
 Author URI: https://facetwp.com/
 GitHub URI: facetwp/facetwp-bookings
@@ -277,7 +277,7 @@ class FacetWP_Facet_Availability
         $this.find('.facet-time-format').val(obj.time_format);
     });
 
-    wp.hooks.addFilter('facetwp/save/availability', function($this, obj) {
+    wp.hooks.addFilter('facetwp/save/availability', function(obj, $this) {
         obj['time'] = $this.find('.facet-time').val();
         obj['minute_increment'] = $this.find('.facet-minute-increment').val();        
         obj['hour_increment'] = $this.find('.facet-hour-increment').val();        
