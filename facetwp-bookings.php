@@ -51,7 +51,6 @@ class FacetWP_Facet_Availability
         $output .= '<input type="text" class="facetwp-date facetwp-date-min" data-time-format="'. $time_format .'" data-minute-increment="' . $minute_increment . '" data-hour-increment="' . $hour_increment . '" data-enable-time="' . $time . '" value="' . $value[0] . '" placeholder="' . __( 'Start Date', 'fwp' ) . '" />';
         $output .= '<input type="text" class="facetwp-date facetwp-date-max" data-time-format="'. $time_format .'" data-minute-increment="' . $minute_increment . '" data-hour-increment="' . $hour_increment . '" data-enable-time="' . $time . '" value="' . $value[1] . '" placeholder="' . __( 'End Date', 'fwp' ) . '" />';
         $output .= '<input type="number" class="facetwp-quantity" value="'. esc_attr( $value[2] ) .'" min="0" placeholder="' . __( 'Quantity', 'fwp' ) . '" />';
-        $output .= '<input type="submit" class="facetwp-availability-update" value="' . __( 'Update', 'fwp' ) . '" />';
         return $output;
     }
 
@@ -67,8 +66,8 @@ class FacetWP_Facet_Availability
         $values = $params['selected_values'];
         $behavior = empty( $facet['behavior'] ) ? 'default' : $facet['behavior'];
 
-        $start_date = empty( $values[0] ) ? '' : $values[0];
-        $end_date = empty( $values[1] ) ? '' : $values[1];
+        $start_date = empty( $values[0] ) ? '2000-01-01' : $values[0];
+        $end_date = empty( $values[1] ) ? '2100-12-31' : $values[1];
         $quantity = empty( $values[2] ) ? 1 : (int) $values[2];
 
         // WPJM Products integration
@@ -323,7 +322,7 @@ class FacetWP_Facet_Availability
         var min = $this.find('.facetwp-date-min').val() || '';
         var max = $this.find('.facetwp-date-max').val() || '';
         var quantity = $this.find('.facetwp-quantity').val() || 1;
-        FWP.facets[facet_name] = ('' != min && '' != max) ? [min, max, quantity] : [];
+        FWP.facets[facet_name] = ('' != min || '' != max) ? [min, max, quantity] : [];
     });
 
     wp.hooks.addFilter('facetwp/selections/availability', function(output, params) {
@@ -339,6 +338,9 @@ class FacetWP_Facet_Availability
         var flatpickr_opts = {            
             minDate: new Date().toISOString().slice(0, 10),
             locale: FWP_JSON.datepicker.locale,
+            onChange: function() {
+                FWP.autoload();
+            },
             onReady: function(dateObj, dateStr, instance) {
                 var $cal = $(instance.calendarContainer);
                 if ($cal.find('.flatpickr-clear').length < 1) {
@@ -366,10 +368,6 @@ class FacetWP_Facet_Availability
             new flatpickr(this, opts);
             $(this).addClass('ready');
         });
-    });
-
-    $(document).on('click', '.facetwp-availability-update', function() {
-        FWP.autoload();
     });
 })(jQuery);
 </script>
