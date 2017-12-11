@@ -2,7 +2,7 @@
 /*
 Plugin Name: FacetWP - Bookings Integration
 Description: WooCommerce Bookings support
-Version: 0.5.1
+Version: 0.5.2
 Author: FacetWP, LLC
 Author URI: https://facetwp.com/
 GitHub URI: facetwp/facetwp-bookings
@@ -304,16 +304,17 @@ class FacetWP_Facet_Availability
     function front_scripts() {
         $locale = get_locale();
         $locale = empty( $locale ) ? 'en' : substr( $locale, 0, 2 );
+        $dir = version_compare( FACETWP_VERSION, '3.0.9', '<' ) ? 'js' : 'vendor';
 
         FWP()->display->json['datepicker'] = array(
             'locale'    => $locale,
             'clearText' => __( 'Clear', 'fwp' ),
         );
-        FWP()->display->assets['flatpickr.css'] = FACETWP_URL . '/assets/js/flatpickr/flatpickr.css';
-        FWP()->display->assets['flatpickr.js'] = FACETWP_URL . '/assets/js/flatpickr/flatpickr.min.js';
+        FWP()->display->assets['flatpickr.css'] = FACETWP_URL . "/assets/$dir/flatpickr/flatpickr.css";
+        FWP()->display->assets['flatpickr.js'] = FACETWP_URL . "/assets/$dir/flatpickr/flatpickr.min.js";
 
         if ( 'en' != $locale ) {
-            FWP()->display->assets['flatpickr-l10n.js'] = FACETWP_URL . "/assets/js/flatpickr/l10n/$locale.js";
+            FWP()->display->assets['flatpickr-l10n.js'] = FACETWP_URL . "/assets/$dir/flatpickr/l10n/$locale.js";
         }
 ?>
 <script>
