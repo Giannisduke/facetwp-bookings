@@ -151,7 +151,7 @@ class FacetWP_Facet_Availability
                     if ( 'exact' === $behavior ) {
 
                         // If behavior is exact, calculate how many units between start and finish
-                        $unit = ( 'accommodation-booking' == $product->product_type ) ? 'night' : $product->get_duration_unit();                    
+                        $unit = $product->is_type( 'accommodation-booking' ) ? 'night' : $product->get_duration_unit();
                         $duration = $this->calculate_duration( $start_date_raw, $end_date_raw, $product->get_duration(), $unit );
                         $args['wc_bookings_field_duration'] = $duration;
                     }
@@ -165,7 +165,7 @@ class FacetWP_Facet_Availability
                     }
                     elseif ( 'exact' !== $behavior ) {
                         $blocks_in_range  = $booking_form->product->get_blocks_in_range( strtotime( $start_date_raw ), strtotime( $end_date_raw ) );
-                        $available_blocks = $booking_form->product->get_available_blocks( $blocks_in_range );                        
+                        $available_blocks = $booking_form->product->get_available_blocks( $blocks_in_range );
                         foreach ( $available_blocks as $check ) {
                             if( true === $booking_form->product->check_availability_rules_against_date( $check, '' ) ) {
                                 $matches[] = $post_id;
