@@ -360,6 +360,7 @@ class FacetWP_Facet_Availability
             var date_format        = facetwp_facet.find('.facetwp-date').attr('data-enable-time') == 'true' ? 'Y-m-d H:i' : 'Y-m-d';
             var time_format        = facetwp_facet.find('.facetwp-date').attr('data-time-format');
 
+            flatpickr_opts.disableMobile = true;
             flatpickr_opts.dateFormat = date_format;
             flatpickr_opts.time_24hr = ('24hr' === time_format);
 
