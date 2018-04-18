@@ -66,8 +66,18 @@ class FacetWP_Facet_Availability
         $values = $params['selected_values'];
         $behavior = empty( $facet['behavior'] ) ? 'default' : $facet['behavior'];
 
-        $start_date = empty( $values[0] ) ? '2000-01-01' : $values[0];
-        $end_date = empty( $values[1] ) ? '2100-12-31' : $values[1];
+        $start_date = empty( $values[0] ) ? '' : $values[0];
+        $end_date = empty( $values[1] ) ? '' : $values[1];
+
+        if ( empty( $start_date ) ) {
+            $end_ts = strtotime( $end_date );
+            $start_date = date( 'Y-m-d', strtotime( '-6 months', $end_ts ) );
+        }
+        elseif ( empty( $end_date ) ) {
+            $start_ts = strtotime( $start_date );
+            $end_date = date( 'Y-m-d', strtotime( '+6 months', $start_ts ) );
+        }
+
         $quantity = empty( $values[2] ) ? 1 : (int) $values[2];
 
         // WPJM Products integration
@@ -125,6 +135,7 @@ class FacetWP_Facet_Availability
         $end = explode( '-', $end_date[0] );
 
         $args = array(
+            'wc_bookings_field_resource' => 0,
             'wc_bookings_field_persons' => $quantity,
             'wc_bookings_field_duration' => 1,
             'wc_bookings_field_start_date_year' => $start[0],
@@ -167,7 +178,7 @@ class FacetWP_Facet_Availability
                         $blocks_in_range  = $booking_form->product->get_blocks_in_range( strtotime( $start_date_raw ), strtotime( $end_date_raw ) );
                         $available_blocks = $booking_form->product->get_available_blocks( $blocks_in_range );
                         foreach ( $available_blocks as $check ) {
-                            if( true === $booking_form->product->check_availability_rules_against_date( $check, '' ) ) {
+                            if ( true === $booking_form->product->check_availability_rules_against_date( $check, '' ) ) {
                                 $matches[] = $post_id;
                                 break; // check passed
                             }
